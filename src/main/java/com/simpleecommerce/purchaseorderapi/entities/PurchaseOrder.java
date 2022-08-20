@@ -6,14 +6,16 @@ public class PurchaseOrder {
     @Id
     public String id;
 
-    public String firstName;
-    public String lastName;
+    public Product[] products;
 
     public PurchaseOrder() {}
 
-    public PurchaseOrder(String firstName, String lastName) {
-        this.firstName = firstName;
-        this.lastName = lastName;
+    public PurchaseOrder(Product[] products) {
+        this.products = products;
     }
 
+    public PurchaseOrder(String id, Product[] products) {
+        this.id = id;
+        this.products = products;
+    }
 }

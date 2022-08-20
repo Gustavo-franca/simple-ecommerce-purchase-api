@@ -1,6 +1,8 @@
 package com.simpleecommerce.purchaseorderapi.services;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.simpleecommerce.purchaseorderapi.entities.PurchaseOrder;
 import com.simpleecommerce.purchaseorderapi.repository.PurchaseOrderRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +16,7 @@ public class PurchaseOrderService {
     private String  topicName;
     private PurchaseOrderRepository repository;
     private final KafkaTemplate<String,String> kafkaTemplate;
+    private final ObjectMapper mapper = new ObjectMapper();
 
     public PurchaseOrderService(PurchaseOrderRepository repository,final KafkaTemplate<String,String> kafkaTemplate) {
         this.repository = repository;
@@ -21,9 +24,10 @@ public class PurchaseOrderService {
 
     }
 
-    public PurchaseOrder create (PurchaseOrder purchaseOrderRequest) {
-        kafkaTemplate.send(topicName,"TESTE");
-        return this.repository.save(purchaseOrderRequest);
+    public PurchaseOrder create (PurchaseOrder purchaseOrderRequest) throws JsonProcessingException {
+        var data = this.repository.save(purchaseOrderRequest);
+        kafkaTemplate.send(topicName,mapper.writeValueAsString(data));
+        return data;
     }
 
     public PurchaseOrder update (PurchaseOrder updateRequest) {
